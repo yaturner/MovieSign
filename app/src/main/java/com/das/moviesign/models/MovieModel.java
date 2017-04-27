@@ -7,13 +7,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by yaturner on 4/26/2017.
  */
 
-public class MovieModel {
+public class MovieModel implements Serializable{
   private final static String TAG = MovieModel.class.getSimpleName();
 
   private int id;

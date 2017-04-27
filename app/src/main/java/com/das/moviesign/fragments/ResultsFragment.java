@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.das.moviesign.MainActivity;
 import com.das.moviesign.R;
 import com.das.moviesign.adapters.MovieResultsAdapter;
+import com.das.moviesign.constants.Constants;
 import com.das.moviesign.labs.MovieLab;
 import com.das.moviesign.models.MovieModel;
 
@@ -70,6 +71,13 @@ public class ResultsFragment extends Fragment
 
     @Override
   public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-    
+    MovieModel movieModel = movieModelArrayList.get(i);
+      Bundle bundle = new Bundle();
+      bundle.putSerializable(Constants.ARG_SELECTED_MOVIE, movieModel);
+      DetailsFragment fragment = DetailsFragment.newInstance(bundle);
+      fragmentManager.beginTransaction()
+              .replace(R.id.fragment_container, fragment, DetailsFragment.class.getSimpleName())
+              .addToBackStack(DetailsFragment.class.getSimpleName())
+              .commit();
   }
 }
