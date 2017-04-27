@@ -1,5 +1,12 @@
 package com.das.moviesign.models;
 
+import android.util.Log;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -7,6 +14,8 @@ import java.util.ArrayList;
  */
 
 public class MovieModel {
+  private final static String TAG = MovieModel.class.getSimpleName();
+
   private int id;
   private String posterPath = null;
   private boolean adult;
@@ -44,6 +53,38 @@ public class MovieModel {
     this.overview = overview;
     this.releaseDate = releaseDate;
     this.genreIds = genreIds;
+    this.originalTitle = originalTitle;
+    this.originalLanguage = originalLanguage;
+    this.title = title;
+    this.backdropPath = backdropPath;
+    this.popularity = popularity;
+    this.voteCount = voteCount;
+    this.video = video;
+    this.voteAverage = voteAverage;
+  }
+
+  public MovieModel(
+          int id,
+          String posterPath,
+          boolean adult,
+          String overview,
+          String releaseDate,
+          byte[] genreIds,
+          String originalTitle,
+          String originalLanguage,
+          String title,
+          String backdropPath,
+          int popularity,
+          int voteCount,
+          boolean video,
+          int voteAverage
+  ) {
+    this.id = id;
+    this.posterPath = posterPath;
+    this.adult = adult;
+    this.overview = overview;
+    this.releaseDate = releaseDate;
+    setGenreIds(genreIds);
     this.originalTitle = originalTitle;
     this.originalLanguage = originalLanguage;
     this.title = title;
@@ -100,6 +141,39 @@ public class MovieModel {
 
   public void setGenreIds(ArrayList<String> genreIds) {
     this.genreIds = genreIds;
+  }
+
+  public byte[] getSerializedGenreIds() {
+// Serialize data object to a byte array
+    try {
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      ObjectOutputStream os = new ObjectOutputStream(out);
+      os.writeObject(genreIds);
+      return out.toByteArray();
+    } catch (IOException e) {
+      Log.d(TAG, e.getMessage());
+    }
+    return null;
+  }
+
+  public void setGenreIds(byte[] genreBytes) {
+    genreIds = new ArrayList<String>();
+    if (genreBytes != null&& genreBytes.length > 0) {
+      ByteArrayInputStream in = new ByteArrayInputStream(genreBytes);
+      ObjectInputStream is = null;
+      try {
+        is = new ObjectInputStream(in);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      try {
+        genreIds = (ArrayList<String>)is.readObject();
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   public String getOriginalTitle() {
