@@ -18,7 +18,7 @@ public class MovieLab {
   private static MovieLab movieLab = null;
   
   private Context context = null;
-  private SQLiteDatabase mDatabase;
+  private SQLiteDatabase db;
 
   public static MovieLab get(Context context){
     if(movieLab==null){
@@ -30,9 +30,13 @@ public class MovieLab {
 
   private MovieLab(Context context){
     context = context.getApplicationContext();
-    mDatabase = new DbHelper(context).getWritableDatabase();
+    db = new DbHelper(context).getWritableDatabase();
   }
 
+  public void addMovie(MovieModel movieModel) {
+    ContentValues values = getContentValues(movieModel);
+    db.insertWithOnConflict(DbSchema.MovieTable.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+  }
 
 
   private static ContentValues getContentValues(MovieModel movie){
@@ -56,7 +60,7 @@ public class MovieLab {
   }
 
   private DbCursorWrapper queryMovie(String whereClause, String orderClause){
-    Cursor cursor = mDatabase.query(
+    Cursor cursor = db.query(
             DbSchema.MovieTable.NAME,
             null,
             whereClause,
