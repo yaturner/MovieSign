@@ -63,7 +63,7 @@ public class SearchFragment extends Fragment
   public void onClick(View view) {
     int vId = view.getId();
     if(vId == R.id.search_submit_button) {
-      String title = titleText.getText().toString();
+      String title = titleText.getText().toString().trim();
       if(title == null || title.isEmpty()) {
         Toast.makeText(getActivity(), R.string.no_title, Toast.LENGTH_LONG).show();
         return;
