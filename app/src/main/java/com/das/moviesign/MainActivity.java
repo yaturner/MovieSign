@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     _instance = this;
 
     movieLab = MovieLab.get(this);
+    movieLab.deleteAllMovies();
 
     setContentView(R.layout.activity_main);
     fragmentManager = getSupportFragmentManager();

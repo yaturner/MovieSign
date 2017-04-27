@@ -2,6 +2,11 @@ package com.das.moviesign.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,10 +57,45 @@ public class DetailsFragment extends Fragment {
     release_date = (TextView) view.findViewById(R.id.details_release_date);
     overview = (TextView) view.findViewById(R.id.details_overview);
 
-    title.setText(movieModel.getTitle());
-    original_title.setText(movieModel.getOriginalTitle());
-    release_date.setText(movieModel.getReleaseDate());
-    overview.setText(movieModel.getOverview());
+    int pos1, pos;
+
+    SpannableStringBuilder ssb = new SpannableStringBuilder();
+    ssb.append(getActivity().getString(R.string.title));
+    pos = ssb.length();
+    ssb.append(Constants.LINE_SEPERATOR);
+    ssb.append(movieModel.getTitle());
+    ssb.setSpan(new AbsoluteSizeSpan(18, true), 0, pos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    ssb.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), android.R.color.holo_blue_light)), pos, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    title.setText(ssb);
+
+    ssb = new SpannableStringBuilder();
+    ssb.append(getActivity().getString(R.string.original_title));
+    pos = ssb.length();
+    ssb.append(Constants.LINE_SEPERATOR);
+    ssb.append(movieModel.getOriginalTitle());
+    ssb.setSpan(new AbsoluteSizeSpan(18, true), 0, pos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    ssb.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), android.R.color.holo_blue_light)), pos, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    original_title.setText(ssb);
+
+    ssb = new SpannableStringBuilder();
+    ssb.append(getActivity().getString(R.string.release_date));
+    pos = ssb.length();
+    ssb.append(Constants.LINE_SEPERATOR);
+    ssb.append(movieModel.getReleaseDate());
+    ssb.setSpan(new AbsoluteSizeSpan(18, true), 0, pos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    ssb.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), android.R.color.holo_blue_light)), pos, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    release_date.setText(ssb);
+
+    ssb = new SpannableStringBuilder();
+    ssb.append(getActivity().getString(R.string.overview));
+    pos = ssb.length();
+    ssb.append(Constants.LINE_SEPERATOR);
+    ssb.append(movieModel.getOverview());
+    ssb.setSpan(new AbsoluteSizeSpan(18, true), 0, pos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    ssb.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), android.R.color.holo_blue_light)), pos, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    overview.setText(ssb);
+
+
 
     return view;
   }

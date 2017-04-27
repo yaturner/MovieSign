@@ -41,6 +41,11 @@ public class MovieLab {
     db.insertWithOnConflict(DbSchema.MovieTable.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
   }
 
+  public void deleteAllMovies()
+  {
+    db.delete(DbSchema.MovieTable.NAME, null, null);
+  }
+
   public ArrayList<MovieModel> getAllMovies()
   {
     ArrayList<MovieModel> movieModelArrayList = new ArrayList<>();
