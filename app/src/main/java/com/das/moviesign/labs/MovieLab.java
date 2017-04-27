@@ -4,11 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.ArrayAdapter;
 
 import com.das.moviesign.database.DbCursorWrapper;
 import com.das.moviesign.database.DbHelper;
 import com.das.moviesign.database.DbSchema;
 import com.das.moviesign.models.MovieModel;
+
+import java.util.ArrayList;
 
 /**
  * Created by yaturner on 4/26/2017.
@@ -38,6 +41,24 @@ public class MovieLab {
     db.insertWithOnConflict(DbSchema.MovieTable.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
   }
 
+  public ArrayList<MovieModel> getAllMovies()
+  {
+    ArrayList<MovieModel> movieModelArrayList = new ArrayList<>();
+
+    DbCursorWrapper cursor = queryMovie(null, null);
+
+    try {
+      cursor.moveToFirst();
+      while (!cursor.isAfterLast()) {
+        movieModelArrayList.add(cursor.getMovie());
+        cursor.moveToNext();
+      }
+    } finally {
+      cursor.close();
+    }
+
+    return movieModelArrayList;
+  }
 
   private static ContentValues getContentValues(MovieModel movie){
     ContentValues values = new ContentValues();

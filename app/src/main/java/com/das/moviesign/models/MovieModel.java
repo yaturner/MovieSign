@@ -21,15 +21,15 @@ public class MovieModel {
   private boolean adult;
   private String overview = null;
   private String releaseDate = null;
-  private ArrayList<String> genreIds = null;
+  private ArrayList<GenreModel> genreIds = null;
   private String originalTitle = null;
   private String originalLanguage = null;
   private String title = null;
   private String backdropPath = null;
-  private int popularity;
+  private double popularity;
   private int voteCount;
   private boolean video;
-  private int voteAverage;
+  private double voteAverage;
 
   public MovieModel(
           int id,
@@ -37,15 +37,15 @@ public class MovieModel {
           boolean adult,
           String overview,
           String releaseDate,
-          ArrayList<String> genreIds,
+          ArrayList<GenreModel> genreIds,
           String originalTitle,
           String originalLanguage,
           String title,
           String backdropPath,
-          int popularity,
+          double popularity,
           int voteCount,
           boolean video,
-          int voteAverage
+          double voteAverage
   ) {
     this.id = id;
     this.posterPath = posterPath;
@@ -74,10 +74,10 @@ public class MovieModel {
           String originalLanguage,
           String title,
           String backdropPath,
-          int popularity,
+          double popularity,
           int voteCount,
           boolean video,
-          int voteAverage
+          double voteAverage
   ) {
     this.id = id;
     this.posterPath = posterPath;
@@ -135,11 +135,11 @@ public class MovieModel {
     this.releaseDate = releaseDate;
   }
 
-  public ArrayList<String> getGenreIds() {
+  public ArrayList<GenreModel> getGenreIds() {
     return genreIds;
   }
 
-  public void setGenreIds(ArrayList<String> genreIds) {
+  public void setGenreIds(ArrayList<GenreModel> genreIds) {
     this.genreIds = genreIds;
   }
 
@@ -157,7 +157,7 @@ public class MovieModel {
   }
 
   public void setGenreIds(byte[] genreBytes) {
-    genreIds = new ArrayList<String>();
+    genreIds = new ArrayList<GenreModel>();
     if (genreBytes != null&& genreBytes.length > 0) {
       ByteArrayInputStream in = new ByteArrayInputStream(genreBytes);
       ObjectInputStream is = null;
@@ -167,7 +167,7 @@ public class MovieModel {
         e.printStackTrace();
       }
       try {
-        genreIds = (ArrayList<String>)is.readObject();
+        genreIds = (ArrayList<GenreModel>)is.readObject();
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       } catch (IOException e) {
@@ -208,11 +208,11 @@ public class MovieModel {
     this.backdropPath = backdropPath;
   }
 
-  public int getPopularity() {
+  public double getPopularity() {
     return popularity;
   }
 
-  public void setPopularity(int popularity) {
+  public void setPopularity(double popularity) {
     this.popularity = popularity;
   }
 
@@ -232,11 +232,11 @@ public class MovieModel {
     this.video = video;
   }
 
-  public int getVoteAverage() {
+  public double getVoteAverage() {
     return voteAverage;
   }
 
-  public void setVoteAverage(int voteAverage) {
+  public void setVoteAverage(double voteAverage) {
     this.voteAverage = voteAverage;
   }
 }

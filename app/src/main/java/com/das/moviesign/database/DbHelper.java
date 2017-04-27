@@ -26,20 +26,20 @@ public class DbHelper extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     db.execSQL(create_string + DbSchema.MovieTable.NAME + "("
-            + DbSchema.MovieTable.Cols.ID + "INTEGER PRIMARY KEY "
-            + DbSchema.MovieTable.Cols.POSTER_PATH + " TEXT "
+            + DbSchema.MovieTable.Cols.ID + " INTEGER PRIMARY KEY, "
+            + DbSchema.MovieTable.Cols.POSTER_PATH + " TEXT, "
             + DbSchema.MovieTable.Cols.ADULT + INTEGER
-            + DbSchema.MovieTable.Cols.OVERVIEW  + " TEXT "
-            + DbSchema.MovieTable.Cols.RELEASE_DATE + " TEXT "
+            + DbSchema.MovieTable.Cols.OVERVIEW  + " TEXT, "
+            + DbSchema.MovieTable.Cols.RELEASE_DATE + " TEXT, "
             + DbSchema.MovieTable.Cols.GENRE_IDS + BLOB
-            + DbSchema.MovieTable.Cols.ORIGINAL_TITLE + " TEXT "
-            + DbSchema.MovieTable.Cols.ORIGINAL_LANGUAGE + " TEXT "
-            + DbSchema.MovieTable.Cols.TITLE + " TEXT "
-            + DbSchema.MovieTable.Cols.BACKDROP_PATH + " TEXT "
-            + DbSchema.MovieTable.Cols.POPULARITY + INTEGER
+            + DbSchema.MovieTable.Cols.ORIGINAL_TITLE + " TEXT, "
+            + DbSchema.MovieTable.Cols.ORIGINAL_LANGUAGE + " TEXT, "
+            + DbSchema.MovieTable.Cols.TITLE + " TEXT, "
+            + DbSchema.MovieTable.Cols.BACKDROP_PATH + " TEXT, "
+            + DbSchema.MovieTable.Cols.POPULARITY + " DOUBLE, "
             + DbSchema.MovieTable.Cols.VOTE_COUNT + INTEGER
             + DbSchema.MovieTable.Cols.VIDEO + INTEGER
-            + DbSchema.MovieTable.Cols.VOTE_AVERAGE + INTEGER
+            + DbSchema.MovieTable.Cols.VOTE_AVERAGE + " DOUBLE "
                     + ")");
   }
 

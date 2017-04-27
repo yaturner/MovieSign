@@ -1,5 +1,6 @@
 package com.das.moviesign;
 
+import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,50 +20,50 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.das.moviesign.constants.Constants;
+import com.das.moviesign.fragments.SearchFragment;
+import com.das.moviesign.labs.MovieLab;
+import com.das.moviesign.models.GenreModel;
+import com.das.moviesign.models.MovieModel;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
-  /**
-   * The {@link android.support.v4.view.PagerAdapter} that will provide
-   * fragments for each of the sections. We use a
-   * {@link FragmentPagerAdapter} derivative, which will keep every
-   * loaded fragment in memory. If this becomes too memory intensive, it
-   * may be best to switch to a
-   * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-   */
-  private SectionsPagerAdapter mSectionsPagerAdapter;
+  private static MainActivity _instance = null;
+  private FragmentManager fragmentManager = null;
 
-  /**
-   * The {@link ViewPager} that will host the section contents.
-   */
-  private ViewPager mViewPager;
+  private MovieLab movieLab = null;
+  int currentPageNo = -1;
+  int totalResults = -1;
+  int totalPages = -1;
+
+  public static MainActivity getInstance() {
+    return _instance;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    _instance = this;
+
+    movieLab = MovieLab.get(this);
+
     setContentView(R.layout.activity_main);
-
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-    // Create the adapter that will return a fragment for each of the three
-    // primary sections of the activity.
-    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-    // Set up the ViewPager with the sections adapter.
-    mViewPager = (ViewPager) findViewById(R.id.container);
-    mViewPager.setAdapter(mSectionsPagerAdapter);
-
-    TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-    tabLayout.setupWithViewPager(mViewPager);
-
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-    fab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-      }
-    });
-
+    fragmentManager = getSupportFragmentManager();
+    SearchFragment searchFragment = SearchFragment.newInstance(null);
+    fragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, searchFragment, SearchFragment.class.getSimpleName())
+            .addToBackStack(SearchFragment.class.getSimpleName())
+            .commit();
   }
 
 
@@ -88,75 +89,78 @@ public class MainActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  /**
-   * A placeholder fragment containing a simple view.
-   */
-  public static class PlaceholderFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_SECTION_NUMBER = "section_number";
+  public void getMovieInfo(String title, int pageNo) {
+    String request = "https://api.themoviedb.org/3/search/movie?api_key=" +
+            Constants.API_V3_TOKEN +
+            "&language=en-US&query=" +
+            Uri.encode(title) +
+            "&page=" +
+            pageNo +
+            "&include_adult=false";
 
-    public PlaceholderFragment() {
-    }
+       Ion.with(this)
+            .load(request)
+            .asString().setCallback(new FutureCallback<String>() {
+      @Override
+      public void onCompleted(Exception e, String result) {
+        if (result != null) {
+          parseMovieJson(result);
+        }
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-      PlaceholderFragment fragment = new PlaceholderFragment();
-      Bundle args = new Bundle();
-      args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-      fragment.setArguments(args);
-      return fragment;
-    }
+      }
+    });
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-      View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-      TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-      textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-      return rootView;
-    }
+
   }
 
-  /**
-   * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-   * one of the sections/tabs/pages.
-   */
-  public class SectionsPagerAdapter extends FragmentPagerAdapter {
+  public void parseMovieJson(final String result) {
+    ArrayList<GenreModel> genreModelArrayList = new ArrayList<>();
 
-    public SectionsPagerAdapter(FragmentManager fm) {
-      super(fm);
+    if (result == null || result.isEmpty()) {
+      //TODO error
+      return;
     }
 
-    @Override
-    public Fragment getItem(int position) {
-      // getItem is called to instantiate the fragment for the given page.
-      // Return a PlaceholderFragment (defined as a static inner class below).
-      return PlaceholderFragment.newInstance(position + 1);
-    }
+    try {
+      JSONObject response = new JSONObject(result);
+      currentPageNo = response.optInt("page");
+      totalResults = response.optInt("total_results");
+      totalPages = response.optInt("total_pages");
 
-    @Override
-    public int getCount() {
-      // Show 3 total pages.
-      return 3;
-    }
+      JSONArray resultsArray = response.optJSONArray("results");
+      if (resultsArray != null && resultsArray.length() > 0) {
+        for (int movieIndex = 0; movieIndex < resultsArray.length(); movieIndex++) {
+          JSONObject movieObject = resultsArray.optJSONObject(movieIndex);
+          boolean adult = movieObject.optBoolean("adult", false);
+          String backdropPath = movieObject.optString("backdrop_path", "");
+          JSONArray genreArray = movieObject.optJSONArray("genre_ids");
+          if (genreArray.length() > 0) {
+            for (int index = 0; index < genreArray.length(); index++) {
+              int id = genreArray.getInt(0);
+              genreModelArrayList.add(new GenreModel(id, ""));
+            }
+          }
+          int id = movieObject.optInt("id");
+          String origLanguage = movieObject.optString("original_language", "");
+          String origTitle = movieObject.optString("original_title", "");
+          String overview = movieObject.optString("overview", "");
+          double popularity = movieObject.optDouble("popularity", 0.0);
+          String posterPath = movieObject.optString("poster_path", "");
+          String releaseDate = movieObject.optString("release_date", "");
+          String title = movieObject.optString("title", "");
+          boolean video = movieObject.optBoolean("video", false);
+          double voteAverage = movieObject.optDouble("vote_average", 0.0);
+          int vote_count = movieObject.optInt("vote_count", 0);
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-      switch (position) {
-        case 0:
-          return "SECTION 1";
-        case 1:
-          return "SECTION 2";
-        case 2:
-          return "SECTION 3";
+          MovieModel movieModel = new MovieModel(id, posterPath, adult, overview, releaseDate, genreModelArrayList, origTitle, origLanguage,
+                  title, backdropPath, popularity, vote_count, video, voteAverage);
+
+          movieLab.addMovie(movieModel);
+        }
       }
-      return null;
+    } catch (JSONException e) {
+      //TODO error
+      return;
     }
   }
 }
